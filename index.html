@@ -1,54 +1,524 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TheCSLearn</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TheCSLearn — CS Notes & Programming Hub</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Hero ── */
+    .hero {
+      padding: 7rem 2rem 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 600px;
+      background: radial-gradient(ellipse at center,
+        rgba(88,166,255,0.07) 0%,
+        rgba(88,166,255,0.02) 50%,
+        transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 .word-cs {
+      color: var(--cyan);
+      text-shadow: 0 0 40px rgba(88,166,255,0.4);
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--text-secondary);
+      max-width: 540px;
+      margin: 0 auto 2.5rem;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      margin-top: 3.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Search ── */
+    .search-wrap {
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      font-family: var(--font-ui);
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .search-input::placeholder { color: var(--text-muted); }
+
+    .search-input:focus {
+      border-color: var(--cyan-border);
+      box-shadow: 0 0 0 3px var(--cyan-glow);
+    }
+
+    /* ── Section ── */
+    .section {
+      padding: 0 2rem 5rem;
+    }
+
+    .section-header {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* ── Subject Grid ── */
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .subject-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--transition),
+                  border-color var(--transition),
+                  box-shadow var(--transition);
+      cursor: pointer;
+    }
+
+    .subject-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--card-accent-bg) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity var(--transition);
+      pointer-events: none;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-card), 0 0 0 1px var(--card-accent-border);
+      border-color: var(--card-accent-border);
+    }
+
+    .subject-card:hover::before { opacity: 1; }
+
+    /* Per-card accent colors */
+    .card-pf   { --card-accent: #58a6ff; --card-accent-bg: rgba(88,166,255,0.05); --card-accent-border: rgba(88,166,255,0.35); }
+    .card-oop  { --card-accent: #3fb950; --card-accent-bg: rgba(63,185,80,0.05);  --card-accent-border: rgba(63,185,80,0.35); }
+    .card-ds   { --card-accent: #bc8cff; --card-accent-bg: rgba(188,140,255,0.05); --card-accent-border: rgba(188,140,255,0.35); }
+    .card-db   { --card-accent: #ffa657; --card-accent-bg: rgba(255,166,87,0.05); --card-accent-border: rgba(255,166,87,0.35); }
+
+    .card-icon {
+      width: 46px; height: 46px;
+      border-radius: var(--radius-md);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .subject-card:hover .card-icon {
+      border-color: var(--card-accent-border);
+      background: var(--card-accent-bg);
+    }
+
+    .card-body { flex: 1; }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .card-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .card-arrow {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      transition: all var(--transition);
+    }
+
+    .subject-card:hover .card-arrow {
+      background: var(--card-accent-bg);
+      border-color: var(--card-accent-border);
+      color: var(--card-accent);
+      transform: translateX(2px);
+    }
+
+    /* ── Coming soon badge ── */
+    .soon-badge {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.5rem;
+      border-radius: 99px;
+    }
+
+    /* ── Topics quick-view row ── */
+    .topics-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .topic-chip {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    /* ── Feature strip ── */
+    .features-strip {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 1.5rem 2rem;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 4rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .feature-item .fi-icon {
+      font-size: 1rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .hero { padding: 5rem 1.25rem 3rem; }
+      .section { padding: 0 1.25rem 3rem; }
+      .hero-stats { gap: 1.5rem; }
+      .features-strip { padding: 1.25rem; }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>TheCSLearn</h1>
-        <p>CS Notes, Programming, AI/ML Learning Platform</p>
-    </header>
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">
+    <span class="brand-dot"></span>
+    TheCSLearn
+  </a>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="pf.html">PF</a></li>
+    <li><a href="#">OOP</a></li>
+    <li><a href="#">DSA</a></li>
+    <li><a href="#">DBMS</a></li>
+  </ul>
+</nav>
 
-    <section class="hero">
-        <h2>Learn Computer Science the Smart Way</h2>
-        <p>Well-organized notes, programming guides, and AI/ML resources for students.</p>
-    </section>
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span class="tag tag-cyan">✦ Free &amp; Open</span>
+  </div>
+  <h1>Learn <span class="word-cs">Computer Science</span><br>the right way.</h1>
+  <p class="hero-sub">
+    Structured notes, clean explanations, and real code examples — built for CS students who want to actually understand what they're learning.
+  </p>
 
-    <section class="subjects">
-        <h2>Subjects</h2>
+  <!-- Search -->
+  <div class="search-wrap">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+    <input
+      class="search-input"
+      id="searchInput"
+      type="text"
+      placeholder="Search topics, concepts..."
+      autocomplete="off"
+    />
+  </div>
 
-        <div class="card-container">
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">4</div>
+      <div class="stat-label">Subjects</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">50+</div>
+      <div class="stat-label">Topics</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">100%</div>
+      <div class="stat-label">Free</div>
+    </div>
+  </div>
+</section>
 
-            <a href="pf.html" class="card">
-                <h3>Programming Fundamentals</h3>
-                <p>Variables, Loops, Functions, Arrays and more.</p>
-            </a>
+<!-- Feature strip -->
+<div class="features-strip container">
+  <div class="feature-item"><span class="fi-icon">📖</span> Exam-ready notes</div>
+  <div class="feature-item"><span class="fi-icon">💻</span> Code examples in C++</div>
+  <div class="feature-item"><span class="fi-icon">🧠</span> Concept-first explanations</div>
+  <div class="feature-item"><span class="fi-icon">📱</span> Mobile friendly</div>
+  <div class="feature-item"><span class="fi-icon">🔄</span> Regularly updated</div>
+</div>
 
-            <a href="#" class="card">
-                <h3>Object Oriented Programming</h3>
-                <p>Classes, Objects, Inheritance, Polymorphism.</p>
-            </a>
+<!-- Subjects -->
+<section class="section container">
+  <div class="section-header">
+    <h2 class="section-title">Browse Subjects</h2>
+    <p class="section-desc">Pick a subject to start reading notes and examples.</p>
+  </div>
 
-            <a href="#" class="card">
-                <h3>Data Structures</h3>
-                <p>Arrays, Linked Lists, Stacks, Queues, Trees.</p>
-            </a>
+  <div class="subjects-grid" id="subjectsGrid">
 
-            <a href="#" class="card">
-                <h3>Database Systems</h3>
-                <p>SQL, Normalization, Queries and DB Design.</p>
-            </a>
-
+    <!-- Programming Fundamentals -->
+    <a href="pf.html" class="subject-card card-pf" data-search="programming fundamentals variables loops arrays functions">
+      <div class="card-icon">⚡</div>
+      <div class="card-body">
+        <div class="card-title">Programming Fundamentals</div>
+        <p class="card-desc">Variables, control flow, loops, functions, and arrays — the core building blocks of every program.</p>
+        <div class="topics-row">
+          <span class="topic-chip">Variables</span>
+          <span class="topic-chip">Loops</span>
+          <span class="topic-chip">Functions</span>
+          <span class="topic-chip">Arrays</span>
         </div>
-    </section>
+      </div>
+      <div class="card-footer">
+        <span class="card-meta">12 topics</span>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
 
-    <footer>
-        <p>© 2026 TheCSLearn | All Rights Reserved</p>
-    </footer>
+    <!-- OOP -->
+    <a href="#" class="subject-card card-oop" data-search="oop object oriented programming classes inheritance polymorphism">
+      <span class="soon-badge">Coming soon</span>
+      <div class="card-icon">🧱</div>
+      <div class="card-body">
+        <div class="card-title">Object Oriented Programming</div>
+        <p class="card-desc">Classes, objects, inheritance, encapsulation, and polymorphism with practical C++ examples.</p>
+        <div class="topics-row">
+          <span class="topic-chip">Classes</span>
+          <span class="topic-chip">Inheritance</span>
+          <span class="topic-chip">Polymorphism</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-meta">14 topics</span>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <!-- Data Structures -->
+    <a href="#" class="subject-card card-ds" data-search="data structures linked list stack queue tree graph algorithms">
+      <span class="soon-badge">Coming soon</span>
+      <div class="card-icon">🌲</div>
+      <div class="card-body">
+        <div class="card-title">Data Structures</div>
+        <p class="card-desc">Arrays, linked lists, stacks, queues, trees, and graphs — with time complexity analysis.</p>
+        <div class="topics-row">
+          <span class="topic-chip">Linked List</span>
+          <span class="topic-chip">Stack</span>
+          <span class="topic-chip">Trees</span>
+          <span class="topic-chip">Graphs</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-meta">16 topics</span>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <!-- Database Systems -->
+    <a href="#" class="subject-card card-db" data-search="database systems sql queries normalization er diagram dbms">
+      <span class="soon-badge">Coming soon</span>
+      <div class="card-icon">🗄️</div>
+      <div class="card-body">
+        <div class="card-title">Database Systems</div>
+        <p class="card-desc">Relational databases, SQL queries, normalization, ER diagrams, and transaction management.</p>
+        <div class="topics-row">
+          <span class="topic-chip">SQL</span>
+          <span class="topic-chip">Normalization</span>
+          <span class="topic-chip">ER Diagrams</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-meta">13 topics</span>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- No results -->
+  <p id="noResults" style="display:none; color:var(--text-muted); font-size:0.9rem; margin-top:1.5rem;">
+    No subjects match your search.
+  </p>
+</section>
+
+<footer class="footer">
+  <p>Built with ♥ by <a href="#">TheCSLearn</a> · Free CS notes for everyone</p>
+</footer>
+
+<script>
+  // Nav toggle
+  document.getElementById('navToggle').addEventListener('click', () => {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  // Search filter
+  document.getElementById('searchInput').addEventListener('input', function () {
+    const q = this.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.subject-card');
+    let visible = 0;
+    cards.forEach(card => {
+      const text = (card.dataset.search + ' ' + card.innerText).toLowerCase();
+      const show = !q || text.includes(q);
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+  });
+</script>
 
 </body>
 </html>
